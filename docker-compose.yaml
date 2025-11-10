@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: db-intro-api
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:5432"
+    networks:
+      - net
+
+  app:
+    build: .
+    container_name: app-intro-api
+    restart: always
+    ports:
+      - "${PORT}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
+
+volumes:
+  pgdata:
